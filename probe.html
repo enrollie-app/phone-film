@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>layout probe</title>
+<style>
+  html, body { margin: 0; background: #111; color: #fff; font: 15px/1.35 -apple-system, sans-serif; }
+  #out { padding: 12px; white-space: pre-wrap; word-break: break-all; }
+  .m { position: fixed; left: -9999px; top: 0; width: 1px; visibility: hidden; }
+</style>
+</head>
+<body>
+<div id="out">measuring</div>
+<div class="m" id="sa" style="padding-top:env(safe-area-inset-top,-1px);padding-bottom:env(safe-area-inset-bottom,-1px);padding-left:env(safe-area-inset-left,-1px);padding-right:env(safe-area-inset-right,-1px)"></div>
+<div class="m" id="dvh" style="height:100dvh"></div>
+<div class="m" id="svh" style="height:100svh"></div>
+<div class="m" id="lvh" style="height:100lvh"></div>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var label = (q.get("label") || "x").replace(/[^a-z0-9-]/gi, "");
+  var rows = [];
+  var t0 = performance.now();
+  function n(s) { return parseFloat(s) || 0; }
+  function read(tag) {
+    var sa = getComputedStyle(document.getElementById("sa"));
+    var vv = window.visualViewport;
+    return {
+      label: label, tag: tag, ms: Math.round(performance.now() - t0),
+      ua: navigator.userAgent, touch: navigator.maxTouchPoints, dpr: window.devicePixelRatio,
+      screenW: screen.width, screenH: screen.height, availH: screen.availHeight,
+      innerW: window.innerWidth, innerH: window.innerHeight, outerW: window.outerWidth, outerH: window.outerHeight,
+      clientH: document.documentElement.clientHeight,
+      vvH: vv ? vv.height : null, vvTop: vv ? vv.offsetTop : null, vvPageTop: vv ? vv.pageTop : null,
+      screenTop: window.screenTop, screenY: window.screenY,
+      saTop: n(sa.paddingTop), saBottom: n(sa.paddingBottom), saLeft: n(sa.paddingLeft), saRight: n(sa.paddingRight),
+      dvh: document.getElementById("dvh").getBoundingClientRect().height,
+      svh: document.getElementById("svh").getBoundingClientRect().height,
+      lvh: document.getElementById("lvh").getBoundingClientRect().height,
+      standalone: window.navigator.standalone === true,
+      portrait: window.innerHeight > window.innerWidth,
+      ref: document.referrer ? 1 : 0
+    };
+  }
+  function show(r) {
+    var keys = ["label","tag","ms","screenW","screenH","innerW","innerH","outerH","clientH","vvH","vvTop","screenTop","screenY","saTop","saBottom","dvh","svh","lvh"];
+    document.getElementById("out").textContent = keys.map(function (k) { return k + " " + r[k]; }).join("\n") + "\n" + r.ua;
+  }
+  function take(tag) { var r = read(tag); rows.push(r); show(r); }
+  function send() {
+    var b = JSON.stringify(rows.splice(0));
+    fetch("/log?label=" + encodeURIComponent(label), { method: "POST", body: b, keepalive: true }).catch(function () {});
+  }
+  take("script");
+  requestAnimationFrame(function () { take("frame1"); requestAnimationFrame(function () { take("frame2"); }); });
+  [100, 500, 1500, 3000].forEach(function (ms) { setTimeout(function () { take("t" + ms); }, ms); });
+  addEventListener("load", function () { take("load"); });
+  setTimeout(send, 3400);
+})();
+</script>
+</body>
+</html>

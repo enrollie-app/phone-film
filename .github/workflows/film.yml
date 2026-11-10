@@ -32,7 +32,7 @@ jobs:
             phone: iPhone-17-Pro
             target: "26.0"
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - name: Film
