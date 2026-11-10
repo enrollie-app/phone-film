@@ -2,7 +2,10 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 #import <objc/runtime.h>
-#ifdef FILM_26
+#if defined(FILM_26) && defined(FILM_ES)
+#define POINTER_LEFT "327px"
+#define ROWS "var html=row(word('\\u2022\\u2022\\u2022'),'Toca \\u2022\\u2022\\u2022 abajo a la derecha')+row(icon('share'),'Toca Compartir')+row(icon('swipe'),'Desliza hacia arriba')+row(icon('add'),'Toca Agregar a inicio')+row(word('Agregar'),'Toca Agregar','Deja activado Abrir como app web.');"
+#elif defined(FILM_26)
 #define POINTER_LEFT "327px"
 #define ROWS "var html=row(word('\\u2022\\u2022\\u2022'),'Tap \\u2022\\u2022\\u2022 at the bottom right')+row(icon('share'),'Tap Share')+row(icon('swipe'),'Swipe up')+row(icon('add'),'Tap Add to Home Screen')+row(word('Add'),'Tap Add','Keep Open as Web App on.');"
 #elif defined(FILM_ES)
