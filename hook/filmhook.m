@@ -2,11 +2,16 @@
 #import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 #import <objc/runtime.h>
+#ifdef FILM_ES
+#define ROWS "var html=row(word('\\u2261'),'Toca \\u2261 en la barra de direcciones')+row(icon('share'),'Toca Compartir')+row(icon('swipe'),'Desliza hacia arriba')+row(icon('add'),'Toca Agregar a inicio')+row(word('Agregar'),'Toca Agregar','Deja activado Abrir como app web.');"
+#else
+#define ROWS "var html=row(word('\\u2261'),'Tap \\u2261 in the address bar')+row(icon('share'),'Tap Share')+row(icon('swipe'),'Swipe up')+row(icon('add'),'Tap Add to Home Screen')+row(word('Add'),'Tap Add','Keep Open as Web App on.');"
+#endif
 static NSString *const kJS = @"(function(){if(location.hostname!=='enrollie.app')return;"
   "var icon=function(n){return '<span class=\"glyph\"><svg aria-hidden=\"true\"><use href=\"#g-'+n+'\"></use></svg></span>';};"
   "var word=function(w){return '<span class=\"glyph glyph-word\">'+w+'</span>';};"
   "var row=function(g,t,s){return '<li>'+g+'<span><b>'+t+'</b>'+(s?'<small>'+s+'</small>':'')+'</span></li>';};"
-  "var html=row(word('\\u2261'),'Tap \\u2261 in the address bar')+row(icon('share'),'Tap Share')+row(icon('swipe'),'Swipe up')+row(icon('add'),'Tap Add to Home Screen')+row(word('Add'),'Tap Add','Keep Open as Web App on.');"
+  ROWS
   "var go=function(){document.querySelectorAll('[data-view=\"ios-safari\"] [data-watch],[data-view=\"ios-safari\"] [data-watch-or]').forEach(function(e){if(e.hidden)e.hidden=false;});"
   "var l=document.querySelector('[data-steps=\"ios\"]');if(l&&l.children.length&&!l.dataset.film){l.dataset.film='1';l.innerHTML=html;}"
   "var p=document.querySelector('[data-pointer]');if(p&&p.style.left!=='97px'){p.style.left='97px';}};"

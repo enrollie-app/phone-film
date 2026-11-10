@@ -16,10 +16,26 @@ U="$(xcrun simctl create film "com.apple.CoreSimulator.SimDeviceType.$PHONE" "co
 echo "device $U"
 xcrun simctl boot "$U"
 xcrun simctl bootstatus "$U" -b | tail -1
+export FILM_LANG="${FILM_LANG:-en}"
+HOOK_FLAG=""
+# No first-time keyboard popup on the Add screen.
+for domain in com.apple.Preferences com.apple.keyboard.ContinuousPath; do
+  xcrun simctl spawn "$U" defaults write "$domain" DidShowContinuousPathIntroduction -bool true
+done
+xcrun simctl spawn "$U" defaults write com.apple.Preferences KeyboardDidShowProductivityTutorial -bool true
+xcrun simctl spawn "$U" defaults write com.apple.Preferences DidShowGestureKeyboardIntroduction -bool true
+if [ "$FILM_LANG" = es ]; then
+  xcrun simctl spawn "$U" defaults write -g AppleLanguages -array es-MX es
+  xcrun simctl spawn "$U" defaults write -g AppleLocale -string es_MX
+  HOOK_FLAG="-DFILM_ES=1"
+fi
+xcrun simctl shutdown "$U"
+xcrun simctl boot "$U"
+xcrun simctl bootstatus "$U" -b | tail -1
 xcrun simctl status_bar "$U" override --time 9:41 --dataNetwork wifi --wifiMode active --wifiBars 3 --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
 
 SDK="$(xcrun --sdk iphonesimulator --show-sdk-path)"
-xcrun clang -arch arm64 -isysroot "$SDK" -target "arm64-apple-ios$TARGET-simulator" -dynamiclib -fobjc-arc \
+xcrun clang -arch arm64 -isysroot "$SDK" -target "arm64-apple-ios$TARGET-simulator" -dynamiclib -fobjc-arc $HOOK_FLAG \
   -framework Foundation -framework WebKit hook/filmhook.m -o hook/filmhook.dylib
 export HOOK="$PWD/hook/filmhook.dylib"
 
