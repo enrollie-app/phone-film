@@ -14,6 +14,8 @@ SHARE = ("Compartir",) if SPANISH else ("Share",)
 ADD = ("Agregar", "Añadir") if SPANISH else ("Add",)
 CONTINUE = ("Continuar", "Continue")
 ADD_XY = (362, 100) if SPANISH else (370, 100)
+# Share sits behind ••• on iOS 26 and behind ≡ on iOS 27.
+MENU_XY = (344, 816) if os.environ.get("NAME") == "ios-26" else (114, 816)
 START = time.time()
 
 
@@ -96,7 +98,7 @@ time.sleep(1.5)
 # The menu button, then Share from the menu that opens.
 share = None
 for _ in range(4):
-    tap_xy(114, 816)
+    tap_xy(*MENU_XY)
     time.sleep(2.5)
     for _ in range(5):
         share = find(*SHARE)

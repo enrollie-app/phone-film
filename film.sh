@@ -29,6 +29,7 @@ if [ "$FILM_LANG" = es ]; then
   xcrun simctl spawn "$U" defaults write -g AppleLocale -string es_419
   HOOK_FLAG="-DFILM_ES=1"
 fi
+if [ "$NAME" = ios-26 ]; then HOOK_FLAG="$HOOK_FLAG -DFILM_26=1"; fi
 xcrun simctl shutdown "$U"
 xcrun simctl boot "$U"
 xcrun simctl bootstatus "$U" -b | tail -1
