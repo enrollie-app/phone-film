@@ -40,10 +40,18 @@ def main():
         run("xcrun", "simctl", "spawn", U, "defaults", "write", domain, KEY, "-int", str(value))
         time.sleep(1)
         run("xcrun", "simctl", "openurl", U, PAGE)
-        time.sleep(10)
-        run("xcrun", "simctl", "io", U, "screenshot", os.path.join(RESULTS, f"{name}.png"))
-        print("pictured", name, flush=True)
-        push(name)
+        waited = 0
+        for at in (10, 30, 60):
+            time.sleep(at - waited)
+            waited = at
+            run("xcrun", "simctl", "io", U, "screenshot", os.path.join(RESULTS, f"{name}-{at}s.png"))
+            print("pictured", name, at, flush=True)
+            push(f"{name} {at}s")
+    run("xcrun", "simctl", "openurl", U, "https://example.com/")
+    time.sleep(15)
+    run("xcrun", "simctl", "io", U, "screenshot", os.path.join(RESULTS, "control.png"))
+    print("pictured control", flush=True)
+    push("control")
     with open(os.path.join(RESULTS, "done.txt"), "w") as out:
         out.write("done\n")
     push("done")
