@@ -126,6 +126,11 @@ before = shot("32-sheet-up")
 time.sleep(0.8)
 tap_xy(155, 637)  # Add to Home Screen
 settled(before, "40-add", 22)
+if os.environ.get("NAME") == "ios-26":
+    # iOS 26 shows its slide-to-type card over the keyboard the first time; Continue is at the bottom.
+    time.sleep(4)
+    tap_xy(201, 829)
+    time.sleep(6)
 nodes = tree()
 popup = next((n for n in walk(nodes) if n.get("AXLabel") in CONTINUE), None)
 if popup is not None:
