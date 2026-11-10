@@ -25,8 +25,8 @@ done
 xcrun simctl spawn "$U" defaults write com.apple.Preferences KeyboardDidShowProductivityTutorial -bool true
 xcrun simctl spawn "$U" defaults write com.apple.Preferences DidShowGestureKeyboardIntroduction -bool true
 if [ "$FILM_LANG" = es ]; then
-  xcrun simctl spawn "$U" defaults write -g AppleLanguages -array es-MX es
-  xcrun simctl spawn "$U" defaults write -g AppleLocale -string es_MX
+  xcrun simctl spawn "$U" defaults write -g AppleLanguages -array es-419
+  xcrun simctl spawn "$U" defaults write -g AppleLocale -string es_419
   HOOK_FLAG="-DFILM_ES=1"
 fi
 xcrun simctl shutdown "$U"
