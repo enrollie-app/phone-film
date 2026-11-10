@@ -1,0 +1,50 @@
+name: film
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: "Python file to run"
+        default: "explore.py"
+      only:
+        description: "ios-27, ios-26 or all"
+        default: "all"
+permissions:
+  contents: read
+jobs:
+  film:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: ios-27
+            runner: xcode-27
+            xcode: /Applications/Xcode_27.2.app
+            runtime: iOS-27-2
+            phone: iPhone-18-Pro
+            target: "27.0"
+          - name: ios-26
+            runner: macos-26
+            xcode: /Applications/Xcode_26.6.app
+            runtime: iOS-26-5
+            phone: iPhone-17-Pro
+            target: "26.0"
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Film
+        if: inputs.only == 'all' || inputs.only == matrix.name
+        env:
+          NAME: ${{ matrix.name }}
+          XCODE: ${{ matrix.xcode }}
+          RUNTIME: ${{ matrix.runtime }}
+          PHONE: ${{ matrix.phone }}
+          TARGET: ${{ matrix.target }}
+          SCRIPT: ${{ inputs.script }}
+        run: bash film.sh
+      - uses: actions/upload-artifact@v4
+        if: always() && (inputs.only == 'all' || inputs.only == matrix.name)
+        with:
+          name: film-${{ matrix.name }}
+          path: out/
+          retention-days: 3
