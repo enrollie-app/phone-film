@@ -26,9 +26,10 @@ export HOOK="$PWD/hook/filmhook.dylib"
 xcrun simctl io "$U" recordVideo --codec=h264 --force "$OUT/take.mov" >/dev/null 2>&1 &
 REC=$!
 sleep 2
-SIMCTL_CHILD_DYLD_INSERT_LIBRARIES="$HOOK" xcrun simctl launch --terminate-running-process "$U" com.apple.mobilesafari https://enrollie.app/
-python3 -I "$SCRIPT"
-RESULT=$?
+SIMCTL_CHILD_DYLD_INSERT_LIBRARIES="$HOOK" xcrun simctl launch --terminate-running-process "$U" com.apple.mobilesafari
+sleep 6
+python3 -I "$SCRIPT" 2>&1 | tee "$OUT/log.txt"
+RESULT=${PIPESTATUS[0]}
 kill -INT "$REC"
 wait "$REC"
 xcrun simctl spawn "$U" log show --last 2m --predicate 'eventMessage CONTAINS "filmhook"' 2>/dev/null | tail -3
