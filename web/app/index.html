@@ -1,0 +1,12 @@
+<!doctype html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel=manifest href=/app/manifest.webmanifest><link rel=apple-touch-icon href=/app/icons/icon-192.png><meta name=apple-mobile-web-app-title content=Enrollie><meta name=theme-color content="#08090B"><title>Enrollie</title>
+<style>body{margin:0;min-height:100vh;background:#08090B;color:#E8EDEA;font:17px/1.4 system-ui,sans-serif;display:flex;flex-direction:column;gap:14px;padding:80px 20px 40px;box-sizing:border-box}button{font:600 17px/1 system-ui,sans-serif;padding:16px;border-radius:14px;border:0;background:#2BE38B;color:#04130B}button.g{background:transparent;color:#E8EDEA;border:1.5px solid #707C76}#s{color:#C9D1CC;font-size:15px}</style></head>
+<body><img src=/app/icons/icon-192.png width=60 height=60 alt=""><div id=s>Film page</div><button id=a class=g>Allow alerts</button><button id=t>Send a test alert</button><button id=n class=g>Send one now</button>
+<script>
+// Film phone only (phone-film): a stand-in for Enrollie's alert setup, with the real test alert's words (sw.js).
+const s=document.getElementById("s");const say=()=>s.textContent="Alerts: "+Notification.permission;say();
+const lang=(navigator.language||"en").toLowerCase().startsWith("es")?"es":"en";
+navigator.serviceWorker.register("/app/sw.js",{scope:"/app/"});
+document.getElementById("a").onclick=()=>Notification.requestPermission().then(say);
+const send=(delay)=>navigator.serviceWorker.ready.then(r=>{r.active.postMessage({lang,delay});s.textContent="Sent ("+lang+", "+delay+" ms)"});
+document.getElementById("t").onclick=()=>send(4000);document.getElementById("n").onclick=()=>send(1);
+</script></body></html>

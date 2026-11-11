@@ -40,6 +40,12 @@ xcrun clang -arch arm64 -isysroot "$SDK" -target "arm64-apple-ios$TARGET-simulat
   -framework Foundation -framework WebKit hook/filmhook.m -o hook/filmhook.dylib
 export HOOK="$PWD/hook/filmhook.dylib"
 
+# The film page (web/app), for takes that need an installed Enrollie with its alerts on: served on this runner only.
+if [ -d web ]; then
+  python3 -I -m http.server 8080 --bind 127.0.0.1 --directory "$PWD/web" >/dev/null 2>&1 &
+  sleep 1
+fi
+
 xcrun simctl io "$U" recordVideo --codec=h264 --force "$OUT/take.mov" >/dev/null 2>&1 &
 REC=$!
 sleep 2
