@@ -191,9 +191,16 @@ if icon is None:
 tap(icon, "open Enrollie")
 time.sleep(6)
 dump("40-app")
+# The page's buttons (web content has no labels here): Allow alerts, Send a test alert, Send one now, in points.
+ALLOW_PAGE, SEND_PAGE, NOW_PAGE = (201, 277), (201, 341), (201, 405)
 button = find("Allow alerts", loose=True)
-tap_xy(*(center(button) if button is not None else (201, 217)))
+tap_xy(*(center(button) if button is not None else ALLOW_PAGE))
 time.sleep(3)
+allow = find(*ALLOW)
+if allow is None:
+    shot("40-no-prompt")
+    tap_xy(*ALLOW_PAGE)
+    time.sleep(3)
 allow = wait_for(ALLOW, "allow")
 tap(allow, "allow alerts")
 time.sleep(3)
@@ -240,7 +247,7 @@ if icon is None:
 tap(icon, "open Enrollie again")
 time.sleep(5)
 send = find("Send a test alert", loose=True)
-tap_xy(*(center(send) if send is not None else (201, 282)))
+tap_xy(*(center(send) if send is not None else SEND_PAGE))
 home()
 mark("FILM waiting for the alert")
 seen = False
@@ -257,7 +264,7 @@ if not seen:
         tap(icon, "open Enrollie for now")
         time.sleep(4)
         now = find("Send one now", loose=True)
-        tap_xy(*(center(now) if now is not None else (201, 347)))
+        tap_xy(*(center(now) if now is not None else NOW_PAGE))
         for i in range(8):
             time.sleep(1.5)
             if find(TITLE, loose=True) is not None:
